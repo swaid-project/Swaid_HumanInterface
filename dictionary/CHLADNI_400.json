@@ -1,0 +1,16 @@
+{
+    "display_name": "CHLADNI_400",
+    "hardware_config": {
+        "base_volume_1": 0.7,
+        "base_volume_2": 0.7,
+        "channels": [
+            {"amplitude": 0.7, "channel": 1, "frequency_hz": 400.0, "phase_deg": 0,   "x":  0.053, "y":  0.036},
+            {"amplitude": 0.7, "channel": 2, "frequency_hz": 400.0, "phase_deg": 0,   "x": -0.053, "y":  0.036},
+            {"amplitude": 0.7, "channel": 3, "frequency_hz": 400.0, "phase_deg": 0,   "x": -0.053, "y": -0.036},
+            {"amplitude": 0.7, "channel": 4, "frequency_hz": 400.0, "phase_deg": 0,   "x":  0.053, "y": -0.036}
+        ]
+    },
+    "id": 8,
+    "physical_parameters": {"settling_time_ms": 480},
+    "ui_metadata": {"image_path": "./dictionary/CHLADNI_400.png"}
+}
