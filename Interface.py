@@ -2,15 +2,14 @@
 Interface.py — MainWindow for SWAID-ESIS.
 
 Draws the radial note-selector, Chladni plate, animated waves, hand-tracking
-overlay, and FEUP logo.  Waves and glow intensity are driven by the currently
-selected Chladni JSON config in dictionary/.
+overlay, and FEUP logo.  Waves and glow intensity are driven by embedded
+Chladni configs (no external config folder).
 
 Keyboard shortcuts (handled here via keyPressEvent):
     M  —  emit settings_requested signal (opens camera dialog in main.py)
     I  —  emit testing_toggle signal (shows/hides diagnostics overlay)
     F  —  hold for blue-hand / sharp mode (♯)
 """
-import json
 import math
 import sys
 import time
@@ -23,18 +22,27 @@ from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen, Q
 from PySide6.QtWidgets import QApplication, QWidget
 
 
+_DEFAULT_FREQUENCIES = [100, 150, 191, 220, 250, 300]
+
+
+def _default_channels(freq):
+    return [
+        {"amplitude": 0.85, "channel": 1, "frequency_hz": freq, "phase_deg": 0, "x": 0.053, "y": 0.036},
+        {"amplitude": 0.85, "channel": 2, "frequency_hz": freq, "phase_deg": 90, "x": 0.947, "y": 0.036},
+        {"amplitude": 0.85, "channel": 3, "frequency_hz": freq, "phase_deg": 180, "x": 0.053, "y": 0.964},
+        {"amplitude": 0.85, "channel": 4, "frequency_hz": freq, "phase_deg": 270, "x": 0.947, "y": 0.964},
+    ]
+
+
 def _load_configs():
-    directory = Path(__file__).parent / "dictionary"
-    if not directory.exists():
-        return []
-    configs = []
-    for path in sorted(directory.glob("*.json")):
-        try:
-            configs.append(json.loads(path.read_text(encoding="utf-8")))
-        except Exception:
-            pass
-    configs.sort(key=lambda c: c.get("id", 0))
-    return configs
+    return [
+        {
+            "display_name": f"CHLADNI_{freq}",
+            "hardware_config": {"channels": _default_channels(freq)},
+            "id": idx,
+        }
+        for idx, freq in enumerate(_DEFAULT_FREQUENCIES)
+    ]
 
 
 def _config_channels(config):
@@ -438,10 +446,6 @@ class MainWindow(QWidget):
         self.draw_chladni_plate(painter, cx, cy, radius, 7)
 
     def draw_center_live_footage(self, painter, cx, cy, radius):
-        painter.setBrush(QColor("#050505"))
-        painter.setPen(QPen(QColor("#f3cf8d"), max(2, int(radius * 0.03))))
-        painter.drawEllipse(QPointF(cx, cy), radius, radius)
-
         image = self.center_live_image
         target = QRectF(cx - radius * 0.86, cy - radius * 0.86, radius * 1.72, radius * 1.72)
         source = self.cover_source_rect(image.width(), image.height())
@@ -453,11 +457,6 @@ class MainWindow(QWidget):
         painter.setClipPath(clip)
         painter.drawImage(target, image, source)
         painter.restore()
-
-        painter.setBrush(Qt.NoBrush)
-        painter.setPen(QPen(QColor("#7c4a1f"), max(2, int(radius * 0.018))))
-        for ring in (0.58, 0.82, 1.0):
-            painter.drawEllipse(QPointF(cx, cy), radius * ring, radius * ring)
 
     def cover_source_rect(self, image_width, image_height):
         if image_width <= 0 or image_height <= 0:

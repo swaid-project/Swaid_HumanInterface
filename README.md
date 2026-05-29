@@ -2,7 +2,7 @@
 
 Interface interativa de controlo vibroacústico para experiências com placas de Chladni, desenvolvida no âmbito do projeto SWAID na FEUP.
 
-A interface usa rastreamento de mãos por câmera (MediaPipe) para selecionar frequências sonoras num seletor circular. O padrão de Chladni no disco central e a animação das ondas são guiados pelos parâmetros JSON do ficheiro de configuração selecionado.
+A interface usa rastreamento de mãos por câmera (MediaPipe) para selecionar frequências sonoras num seletor circular. O padrão de Chladni no disco central e a animação das ondas são guiados por configurações embutidas na aplicação.
 
 ---
 
@@ -68,92 +68,16 @@ python main.py
 SWAID-ESIS/
 ├── assets/
 │   └── LogoFeup.tif          # Logótipo FEUP (TIFF CMYK)
-├── dictionary/
-│   ├── CHLADNI_100.json       # Configuração a 100 Hz
-│   ├── CHLADNI_150.json
-│   ├── CHLADNI_191.json
-│   ├── CHLADNI_220.json
-│   ├── CHLADNI_250.json
-│   ├── CHLADNI_300.json
-│   ├── CHLADNI_350.json
-│   ├── CHLADNI_400.json
-│   ├── CHLADNI_440.json
-│   └── CHLADNI_500.json       # Configuração a 500 Hz
 ├── models/
 │   └── hand_landmarker.task   # Modelo MediaPipe (não incluído no git)
 ├── hand_tracking.py           # Constantes de câmera e demo standalone
 ├── Interface.py               # Janela principal (MainWindow)
 ├── main.py                    # Ponto de entrada, threads de câmera, lógica de tracking
-├── testing.py                 # Overlay de diagnósticos de desempenho
 ├── requirements.txt
 └── README.md
 ```
 
 ---
-
-## Formato dos ficheiros de configuração JSON
-
-Cada ficheiro em `dictionary/` descreve uma configuração de Chladni com 4 canais de áudio:
-
-```json
-{
-    "display_name": "CHLADNI_250",
-    "hardware_config": {
-        "base_volume_1": 1.0,
-        "base_volume_2": 1.0,
-        "channels": [
-            {
-                "amplitude": 0.85,
-                "channel": 1,
-                "frequency_hz": 250,
-                "phase_deg": 0,
-                "x": 0.053,
-                "y": 0.036
-            },
-            {
-                "amplitude": 0.85,
-                "channel": 2,
-                "frequency_hz": 250,
-                "phase_deg": 90,
-                "x": 0.947,
-                "y": 0.036
-            },
-            {
-                "amplitude": 0.85,
-                "channel": 3,
-                "frequency_hz": 250,
-                "phase_deg": 180,
-                "x": 0.053,
-                "y": 0.964
-            },
-            {
-                "amplitude": 0.85,
-                "channel": 4,
-                "frequency_hz": 250,
-                "phase_deg": 270,
-                "x": 0.947,
-                "y": 0.964
-            }
-        ]
-    },
-    "id": 5,
-    "physical_parameters": {
-        "settling_time_ms": null
-    },
-    "ui_metadata": {
-        "image_path": "./dictionary/CHLADNI_250.png"
-    }
-}
-```
-
-### Campos relevantes
-
-| Campo | Descrição |
-|-------|-----------|
-| `id` | Ordem de carregamento (os ficheiros são ordenados por `id`) |
-| `frequency_hz` | Frequência do canal em Hz (100–500). Controla a frequência espacial visual das ondas |
-| `amplitude` | Amplitude de 0.0 a 1.0. Controla a altura das ondas e a intensidade do brilho do círculo |
-| `phase_deg` | Fase em graus (0–360). Controla o desfasamento relativo entre canais |
 
 ---
 
